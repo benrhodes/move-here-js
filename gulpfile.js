@@ -1,7 +1,8 @@
 'use strict';
 
-var gulp = require('gulp');
+var gulp = require('./gulp')([
+   'browserify'
+]);
 
-gulp.task('default', function() {
-   // place code for your default task here
-});
+gulp.task('build', ['browserify']);
+gulp.task('default', ['build']);

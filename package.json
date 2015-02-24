@@ -16,6 +16,8 @@
   },
   "homepage": "https://github.com/benrhodes/move-here-js",
   "devDependencies": {
-    "gulp": "^3.8.11"
+    "browserify": "^9.0.3",
+    "gulp": "^3.8.11",
+    "vinyl-source-stream": "^1.0.0"
   }
 }
