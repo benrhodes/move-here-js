@@ -1,6 +1,6 @@
 'use strict';
 
-var MoveHere = window.MoveHere || {};
+var MoveHere = window.MoveHere = window.MoveHere || {};
 
 MoveHere.MotionDirection = require('./motion-direction');
 MoveHere.Rectangle = require('./rectangle');
