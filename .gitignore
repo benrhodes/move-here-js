@@ -51,6 +51,7 @@ crashlytics-build.properties
 node_modules/
 
 build/
+docs/
 
 
 

@@ -1,6 +1,12 @@
 'use strict';
 
-module.exports = function() {
+/**
+ * @memberof MoveHere
+ * @class Rectangle
+ * @classdesc Rectangle object
+ * @constructor
+ */
+var Rectangle = function() {
    var _x;
    var _y;
    var _width;
@@ -13,6 +19,11 @@ module.exports = function() {
 
    return Object.defineProperties({},
       {
+         /**
+          *  @public
+          *  @memberof MoveHere.Rectangle
+          *  @property {Number} x - x position of the rectangle.
+          */
          x: {
             get: function() {
                return _x;
@@ -21,6 +32,11 @@ module.exports = function() {
                _x = value;
             }
          },
+         /**
+          *  @public
+          *  @memberof MoveHere.Rectangle
+          *  @property {Number} y - y position of the rectangle.
+          */
          y: {
             get: function() {
                return _y;
@@ -29,6 +45,11 @@ module.exports = function() {
                _y = value;
             }
          },
+         /**
+          *  @public
+          *  @memberof MoveHere.Rectangle
+          *  @property {Number} width - width of the rectangle.
+          */
          width: {
             get: function() {
                return _width;
@@ -37,6 +58,11 @@ module.exports = function() {
                _width = value;
             }
          },
+         /**
+          *  @public
+          *  @memberof MoveHere.Rectangle
+          *  @property {Number} height - height of the rectangle.
+          */
          height: {
             get: function() {
                return _height;
@@ -48,3 +74,5 @@ module.exports = function() {
       }
    );
 };
+
+module.exports = Rectangle;
