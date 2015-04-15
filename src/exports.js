@@ -4,7 +4,7 @@
  * MoveHere JavaScript namespace.
  * @namespace MoveHere
  */
-var MoveHere = window.MoveHere = window.MoveHere || {};
+var MoveHere = global.MoveHere = global.MoveHere || {};
 
 MoveHere.MotionDirection = require('./motion-direction');
 MoveHere.Rectangle = require('./rectangle');
