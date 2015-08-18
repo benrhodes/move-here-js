@@ -1,78 +1,40 @@
-'use strict';
+export default class Rectangle {
+   constructor({x=0, y=-0, width=0, height=0} = {}) {
+      this._x = x;
+      this._y = y;
+      this._width = width;
+      this._height = height;
+   }
 
-/**
- * @memberof MoveHere
- * @class Rectangle
- * @classdesc Rectangle object
- * @constructor
- */
-var Rectangle = function() {
-   var _x;
-   var _y;
-   var _width;
-   var _height;
+   set x(value){
+      this._x = value;
+   }
 
-   _x = 0;
-   _y = 0;
-   _width = 0;
-   _height = 0;
+   get x(){
+      return this._x;
+   }
 
-   return Object.defineProperties({},
-      {
-         /**
-          *  @public
-          *  @memberof MoveHere.Rectangle
-          *  @property {Number} x - x position of the rectangle.
-          */
-         x: {
-            get: function() {
-               return _x;
-            },
-            set: function(value) {
-               _x = value;
-            }
-         },
-         /**
-          *  @public
-          *  @memberof MoveHere.Rectangle
-          *  @property {Number} y - y position of the rectangle.
-          */
-         y: {
-            get: function() {
-               return _y;
-            },
-            set: function(value) {
-               _y = value;
-            }
-         },
-         /**
-          *  @public
-          *  @memberof MoveHere.Rectangle
-          *  @property {Number} width - width of the rectangle.
-          */
-         width: {
-            get: function() {
-               return _width;
-            },
-            set: function(value) {
-               _width = value;
-            }
-         },
-         /**
-          *  @public
-          *  @memberof MoveHere.Rectangle
-          *  @property {Number} height - height of the rectangle.
-          */
-         height: {
-            get: function() {
-               return _height;
-            },
-            set: function(value) {
-               _height = value;
-            }
-         }
-      }
-   );
-};
+   set y(value){
+      this._y = value;
+   }
 
-module.exports = Rectangle;
+   get y(){
+      return this._y;
+   }
+
+   set width(value){
+      this._width = value;
+   }
+
+   get width(){
+      return this._width;
+   }
+
+   set height(value){
+      this._height = value;
+   }
+
+   get height(){
+      return this._height;
+   }
+}

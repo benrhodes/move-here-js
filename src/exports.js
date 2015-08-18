@@ -1,11 +1,11 @@
 'use strict';
 
-/**
- * MoveHere JavaScript namespace.
- * @namespace MoveHere
- */
 var MoveHere = global.MoveHere = global.MoveHere || {};
 
-MoveHere.MotionDirection = require('./motion-direction');
-MoveHere.Rectangle = require('./rectangle');
-MoveHere.MotionEngine = require('./motion-engine');
+import Rectangle from './rectangle';
+import MotionDirection from './motion-direction';
+import MotionEngine from './motion-engine';
+
+MoveHere.MotionDirection = MotionDirection;
+MoveHere.Rectangle = Rectangle;
+MoveHere.MotionEngine = MotionEngine;

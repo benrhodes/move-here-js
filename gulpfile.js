@@ -1,13 +1,13 @@
 'use strict';
 
 var gulp = require('./gulp')([
-   'browserify',
    'webserver',
    'jshint',
    'jsdoc',
-   'cleandocs'
+   'cleandocs',
+   'babel'
 ]);
 
-gulp.task('build', ['lint', 'browserify']);
+gulp.task('build', ['babel']);
 gulp.task('default', ['build']);
-gulp.task('docs', ['cleandocs', 'jsdoc']);
+gulp.task('docs', ['cleandocs', 'jsdoc']); // does not work with ES6 syntax

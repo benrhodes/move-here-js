@@ -1,5 +1,6 @@
 'use strict';
 
+// Current task does not work with ES6
 var gulp   = require('gulp');
 var jsdoc = require("gulp-jsdoc");
 
