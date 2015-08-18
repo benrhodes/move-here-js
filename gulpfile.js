@@ -5,6 +5,7 @@ var gulp = require('./gulp')([
    'jshint',
    'jsdoc',
    'cleandocs',
+   'karma',
    'babel'
 ]);
 
