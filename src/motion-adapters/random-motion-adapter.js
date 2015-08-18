@@ -1,9 +1,5 @@
-'use strict';
-
-module.exports = function() {
-   return {
-      whereTo: function() {
-         console.log('Get next point');
-      }
+export default class RandomMotionAdapter {
+   whereTo() {
+      console.log('Get next point');
    }
 };
