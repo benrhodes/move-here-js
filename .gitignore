@@ -52,6 +52,6 @@ node_modules/
 
 build/
 docs/
-
+src/jspm_packages/
 
 
