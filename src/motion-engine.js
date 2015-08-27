@@ -1,26 +1,23 @@
 import Rectangle from './rectangle';
 import MotionDirection from './motion-direction';
 import RandomMotionAdapter from './motion-adapters/random-motion-adapter';
+import Timer from './timer';
 
 export default class MotionEngine {
-   constructor({rect=new Rectangle(), motionDirection=MotionDirection.CURVE_RANDOM} = {}) {
+   constructor({rect=new Rectangle()} = {}) {
       this._boundingRectangle = rect;
-      this._paused = false;
-      switch (motionDirection) {
-         case MotionDirection.CURVE_RANDOM:
-            this._motionAdapter = new RandomMotionAdapter();
-            break;
-         default:
-            break;
-      }
+      this._timer = new Timer();
+      this._adapters = {};
+      this._adapters[MotionDirection.CURVE_RANDOM] = new RandomMotionAdapter(this._boundingRectangle);
+      this._timer.addTimeUpdateListener(this._adapters[MotionDirection.CURVE_RANDOM].update);
    }
    get paused(){
-      return this._paused;
+      return this._timer.paused;
    }
    start() {
-      this._paused = false;
+      this._timer.play();
    }
    stop() {
-      this._paused = true;
+      this._timer.pause();
    }
 }
