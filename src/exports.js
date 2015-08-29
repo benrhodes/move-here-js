@@ -1,5 +1,3 @@
-'use strict';
-
 var MoveHere = global.MoveHere = global.MoveHere || {};
 
 import Rectangle from './rectangle';
