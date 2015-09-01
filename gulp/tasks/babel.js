@@ -13,12 +13,13 @@ function compile(watch) {
 
    function rebundle() {
       bundler.bundle()
+         .on('end', function() { console.log('-> done '); })
          .on('error', function(err) { console.error(err); this.emit('end'); })
          .pipe(source('move-here.js'))
          .pipe(buffer())
          .pipe(sourcemaps.init({ loadMaps: true }))
          .pipe(sourcemaps.write('./'))
-         .pipe(gulp.dest('./build'));
+         .pipe(gulp.dest('./build'))
    }
 
    if (watch) {
@@ -35,5 +36,11 @@ var bableTask = function() {
    return compile();
 };
 
+var watch = function() {
+   return compile(true);
+};
+
+gulp.task('watch', watch);
 gulp.task('babel', bableTask);
 module.exports = bableTask;
+module.exports = watch;
