@@ -1,91 +1,128 @@
 const OUTSIDE_TARGET_AREA = 'outside';
 const INSIDE_TARGET_AREA = 'inside';
 
+import Mathy from '../mathy';
+import Status from '../status-constants';
+
 export default class RandomMotionAdapter {
    constructor(boundingRectangle) {
       this._boundingRectangle = boundingRectangle;
       this._motionAssets = {};
    }
-   generatePoint(motionAsset, targetArea) {
-      let randomXRange = {min:0, max:0};
-      let randomYRange = {min:0, max:0};
-      let point = {x: 0, y: 0};
-
-      switch(targetArea) {
-         case INSIDE_TARGET_AREA:
-            if(motionAsset.x < (this._boundingRectangle.x + this._boundingRectangle.halfWidth)) {
-               randomXRange.min = this._boundingRectangle.eighthWidth;
-               randomXRange.max = this._boundingRectangle.halfWidth - randomXRange.min;
-            } else {
-               randomXRange.min = - this._boundingRectangle.eighthWidth;
-               randomXRange.max = - this._boundingRectangle.halfWidth - randomXRange.min;
-            }
-
-            if(motionAsset.y < (this._boundingRectangle.y + this._boundingRectangle.halfHeight)) {
-               randomYRange.min = this._boundingRectangle.eighthHeight;
-               randomYRange.max = this._boundingRectangle.halfHeight - randomYRange.min;
-            } else {
-               randomYRange.min = - this._boundingRectangle.eighthHeight;
-               randomYRange.max = - this._boundingRectangle.halfHeight - randomYRange.min;
-            }
-
-            point.x = motionAsset.x + Math.round(randomXRange.min + Math.random() * randomXRange.max);
-            point.y = motionAsset.y + Math.round(randomYRange.min + Math.random() * randomYRange.max);
-
-            if(point.x > this._boundingRectangle.x + this._boundingRectangle.width) {
-               point.x = this._boundingRectangle.x + this._boundingRectangle.width;
-            } else if(point.x < this._boundingRectangle.x) {
-               point.x = this._boundingRectangle.x;
-            }
-
-            if(point.y > this._boundingRectangle.y + this._boundingRectangle.height) {
-               point.y = this._boundingRectangle.y + this._boundingRectangle.height;
-            } else if(point.y < this._boundingRectangle.y) {
-               point.y = this._boundingRectangle.y;
-            }
-            break;
-         case OUTSIDE_TARGET_AREA:
-            let region = Math.floor(Math.random() * 4);
-            switch(region) {
-               case 0:
-                  point.x = this._boundingRectangle.x - motionAsset.width;
-                  point.y = this._boundingRectangle.y + Math.round(Math.random() * this._boundingRectangle.height);
-                  break;
-               case 1:
-                  point.x = this._boundingRectangle.x + Math.round(Math.random() * this._boundingRectangle.width);
-                  point.y = this._boundingRectangle.y - motionAsset.height;
-                  break;
-               case 2:
-                  point.x = (this._boundingRectangle.x + this._boundingRectangle.width) + motionAsset.width;
-                  point.y = this._boundingRectangle.y + Math.round(Math.random() * this._boundingRectangle.height);
-                  break;
-               case 3:
-                  point.x = this._boundingRectangle.x + Math.round(Math.random() * this._boundingRectangle.width);
-                  point.y = this._boundingRectangle.y + this._boundingRectangle.height + motionAsset.height;
-                  break;
-               default:
-                  break;
-
-            }
-            break;
-      }
-
-      return point;
-   }
    addAsset(motionAsset) {
-      let initPoint = this.generatePoint(motionAsset, OUTSIDE_TARGET_AREA);
+      let initPoint = Mathy.getRandomPointOutsideRect(motionAsset, this._boundingRectangle);
       motionAsset.x = initPoint.x;
       motionAsset.y = initPoint.y;
 
-      let destinationPoint = this.generatePoint(motionAsset, INSIDE_TARGET_AREA);
+      let destinationPoint = Mathy.getRandomPointInsideRect(motionAsset, this._boundingRectangle);
       motionAsset.destinationX = destinationPoint.x;
       motionAsset.destinationY = destinationPoint.y;
 
+      motionAsset.status = Status.ALIVE;
       motionAsset.acquireRotationDirection = true;
 
       this._motionAssets[motionAsset.id] = motionAsset;
    }
    update(timeInMilliseconds) {
+      let isAssetOutOfTime;
+      let currentAngle;
+      let currentRotation;
+      let distance;
+      let nextX;
+      let nextY;
+      let xDiff;
+      let yDiff;
+      let absXDiff;
+      let absYDiff;
+      let finalAngle;
+      let rotationDiff;
+      let rotationModifier;
+      let motionAsset;
+      let destinationPoint;
+      let rotationAngle;
 
+      Object.keys(this._motionAssets).forEach((key) => {
+         motionAsset = this._motionAssets[key];
+
+         isAssetOutOfTime = (timeInMilliseconds - motionAsset.initTime) >= motionAsset.duration;
+
+         if(isAssetOutOfTime && motionAsset.status === Status.ALIVE) {
+            motionAsset.status = Status.DYING;
+
+            destinationPoint = Mathy.getRandomPointOutsideRect(motionAsset, this._boundingRectangle);
+            motionAsset.destinationX = destinationPoint.x;
+            motionAsset.destinationY = destinationPoint.y;
+            motionAsset.acquireRotationDirection = true;
+            motionAsset.rotationAmount = 0;
+         }
+
+         currentRotation = motionAsset.rotation;
+
+         distance = Mathy.distanceBetweenTwoPoints(motionAsset.x, motionAsset.y, motionAsset.destinationX, motionAsset.destinationY);
+         xDiff = motionAsset.destinationX - motionAsset.x;
+         yDiff = motionAsset.destinationY - motionAsset.y;
+
+         finalAngle = Math.round(Mathy.degrees(Math.acos(xDiff/distance)));
+         rotationAngle = Mathy.convertAngleToRotation(finalAngle, xDiff, yDiff);
+         rotationDiff = Mathy.getMinAngleDiff(rotationAngle, currentRotation);
+
+         if(rotationDiff <= motionAsset.rotationPerFrame) {
+            currentRotation = rotationAngle;
+            currentAngle = Mathy.convertRotationToAngle(currentRotation, xDiff, yDiff);
+         } else {
+            currentAngle = Mathy.convertRotationToAngle(currentRotation, xDiff, yDiff);
+
+            if(motionAsset.acquireRotationDirection) {
+               motionAsset.acquireRotationDirection = false;
+               if(finalAngle < currentRotation) {
+                  motionAsset.rotationDirection = -1;
+               } else {
+                  motionAsset.rotationDirection = 1;
+               }
+            }
+
+            // determine rotation modifier, this only comes into play when an object has rotated more than
+            // 360 degrees around the destination point.  We need to increase the speed of rotation to it
+            // so it can reach its destination eventually.
+            rotationModifier = (motionAsset.rotationAmount/360 <= 1 ? 1 : motionAsset.rotationAmount/360);
+
+            currentAngle += motionAsset.rotationDirection * motionAsset.rotationPerFrame * rotationModifier;
+            currentRotation += motionAsset.rotationDirection * motionAsset.rotationPerFrame * rotationModifier;
+         }
+
+         motionAsset.rotationAmount += Mathy.getMinAngleDiff(motionAsset.rotation, currentRotation);
+         motionAsset.rotation = currentRotation;
+
+         if(yDiff < 0) {
+            nextX = motionAsset.x - (Math.cos(Mathy.radians(currentAngle)) * motionAsset.unitsPerFrame);
+            nextY = motionAsset.y - (Math.sin(Mathy.radians(currentAngle)) * motionAsset.unitsPerFrame);
+         } else {
+            nextX = motionAsset.x + (Math.cos(Mathy.radians(currentAngle)) * motionAsset.unitsPerFrame);
+            nextY = motionAsset.y + (Math.sin(Mathy.radians(currentAngle)) * motionAsset.unitsPerFrame);
+         }
+
+         absXDiff = xDiff > 0.0 ? xDiff : -xDiff;
+         absYDiff = yDiff > 0.0 ? yDiff : -yDiff;
+
+         if(absXDiff < motionAsset.unitsPerFrame && absYDiff < motionAsset.unitsPerFrame) {
+            if(motionAsset.status === Status.ALIVE) {
+               motionAsset.x = motionAsset.destinationX;
+               motionAsset.y = motionAsset.destinationY;
+
+               destinationPoint = Mathy.getRandomPointInsideRect(motionAsset, this._boundingRectangle);
+               motionAsset.destinationX = destinationPoint.x;
+               motionAsset.destinationY = destinationPoint.y;
+               motionAsset.acquireRotationDirection = true;
+               motionAsset.rotationAmount = 0;
+            } else {
+               // TODO: notify that asset is dead
+               motionAsset.status = Status.DEAD;
+               delete this._motionAssets[key];
+            }
+         } else {
+            motionAsset.x = nextX;
+            motionAsset.y = nextY;
+         }
+      });
    }
 };

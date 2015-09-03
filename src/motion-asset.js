@@ -1,23 +1,28 @@
 import MotionDirection from './motion-direction';
 import IdGenerator from './id-generator';
+import Status from './status-constants';
 
 const TARGET_FRAME_RATE = 60;
 
 export default class MotionAsset {
-   constructor(target, initTime, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection) {
+   constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection) {
       this._id = IdGenerator.getId();
       this._target = target;
       this._initTimeInMilliseconds = initTime;
       this._duration = duration;
       this._unitsPerSecond = unitsPerSecond;
-      this._rotationSpeed = rotationSpeed;
+      this._rotationPerSecond = rotationPerSecond;
+      this._rotationPerFrame = rotationPerSecond / TARGET_FRAME_RATE;
       this._motionDirection = motionDirection;
       this._rotateToDirection = rotateToDirection;
       this._unitsPerFrame = unitsPerSecond / TARGET_FRAME_RATE;
       this._acquireRotationDirection = false;
       this._destinationX = 0;
       this._destinationY = 0;
-      this._status = 'born';
+      this._status = Status.BORN;
+      this._rotationAmount = 0;
+      this._rotationDirection = 1;
+      this._rotationProxy = 0;
    }
    get id() {
       return this._id;
@@ -65,10 +70,18 @@ export default class MotionAsset {
       return this._target.height || 0;
    }
    set rotation(rotation) {
-      this._target.rotation = rotation;
+      if(this._rotateToDirection) {
+         this._target.rotation = rotation;
+      } else {
+         this._rotationProxy = rotation;
+      }
    }
    get rotation() {
-      return this._target.rotation;
+      if(this._rotateToDirection) {
+         return this._target.rotation;
+      } else {
+         return this._rotationProxy;
+      }
    }
    set destinationX(x) {
       this._destinationX = x;
@@ -82,8 +95,11 @@ export default class MotionAsset {
    get destinationY() {
       return this._destinationY;
    }
-   get rotationSpeed() {
-      return this._rotationSpeed;
+   get rotationPerSecond() {
+      return this._rotationPerSecond;
+   }
+   get rotationPerFrame() {
+      return this._rotationPerFrame;
    }
    get motionDirection() {
       return this._motionDirection;
@@ -99,5 +115,17 @@ export default class MotionAsset {
    }
    get acquireRotationDirection() {
       return this._acquireRotationDirection;
+   }
+   set rotationAmount(rotationAmount) {
+      this._rotationAmount = rotationAmount;
+   }
+   get rotationAmount() {
+      return this._rotationAmount;
+   }
+   set rotationDirection(rotationDirection) {
+      this._rotationDirection = rotationDirection;
+   }
+   get rotationDirection() {
+      return this._rotationDirection;
    }
 }

@@ -5,7 +5,7 @@ import Timer from './timer';
 import MotionAsset from './motion-asset';
 
 const MIN_DURATION = 2000;
-const MIN_UNITS_PER_SECOND = 15;
+const MIN_UNITS_PER_SECOND = 30;
 const MIN_ROTATION_SPEED_MODIFIER = 1;
 
 export default class MotionEngine {
@@ -39,5 +39,7 @@ export default class MotionEngine {
       let motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection);
 
       motionAdapter.addAsset(motionAsset);
+
+      return motionAsset;
    }
 }
