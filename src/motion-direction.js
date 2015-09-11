@@ -1,5 +1,3 @@
-'use strict';
-
 var MotionDirection = Object.defineProperties({}, {
    'CURVE_RANDOM': {
       enumerable: true,
