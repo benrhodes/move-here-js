@@ -51,7 +51,11 @@ export default class RandomMotionAdapter {
       Object.keys(this._motionAssets).forEach((key) => {
          motionAsset = this._motionAssets[key];
 
-         isAssetOutOfTime = (timeInMilliseconds - motionAsset.initTime) >= motionAsset.duration;
+         if(motionAsset.duration !== -1) {
+            isAssetOutOfTime = (timeInMilliseconds - motionAsset.initTime) >= motionAsset.duration;
+         } else {
+            isAssetOutOfTime = false;
+         }
 
          if (motionAsset.simulateDepth) {
             newScale = MIN_SCALE + (((motionAsset.y - this._boundingRectangle.y) / this._boundingRectangle.height) * (MAX_SCALE - MIN_SCALE));
