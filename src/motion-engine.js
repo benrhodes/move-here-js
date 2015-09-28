@@ -28,7 +28,7 @@ export default class MotionEngine {
    stop() {
       this._timer.pause();
    }
-   addAsset({target=null, motionDirection=MotionDirection.CURVE_RANDOM, duration = MIN_DURATION, unitsPerSecond = MIN_UNITS_PER_SECOND, rotationSpeedModifier = MIN_ROTATION_SPEED_MODIFIER, rotateToDirection = true, simulateDepth = false} = {}) {
+   addAsset({target=null, motionDirection=MotionDirection.CURVE_RANDOM, duration = MIN_DURATION, unitsPerSecond = MIN_UNITS_PER_SECOND, rotationSpeedModifier = MIN_ROTATION_SPEED_MODIFIER, rotateToDirection = true, simulateDepth = false, spawnLocation = 'outside'} = {}) {
       // TODO: provide way to map transform (x, y, rotation, scale...) properties to target passed
       let motionAdapter = this._adaptersMap[motionDirection];
       if(!motionAdapter) {
@@ -36,7 +36,7 @@ export default class MotionEngine {
       }
 
       let rotationSpeed = Math.round(unitsPerSecond * rotationSpeedModifier);
-      let motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection, simulateDepth);
+      let motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection, simulateDepth, spawnLocation);
 
       motionAdapter.addAsset(motionAsset);
 

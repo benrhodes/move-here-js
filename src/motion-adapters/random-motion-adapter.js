@@ -12,7 +12,12 @@ export default class RandomMotionAdapter {
       this._motionAssets = {};
    }
    addAsset(motionAsset) {
-      let initPoint = Mathy.getRandomPointOutsideRect(motionAsset, this._boundingRectangle);
+      let initPoint;
+      if(motionAsset.spawnLocation === 'inside') {
+         initPoint = Mathy.getRandomPointInsideRect(motionAsset, this._boundingRectangle, false);
+      } else {
+         initPoint = Mathy.getRandomPointOutsideRect(motionAsset, this._boundingRectangle);
+      }
       motionAsset.x = initPoint.x;
       motionAsset.y = initPoint.y;
 

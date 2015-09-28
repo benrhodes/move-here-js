@@ -66,25 +66,32 @@ export default class Mathy {
    static distanceBetweenTwoPoints(x1, y1, x2, y2) {
       return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
    }
-   static getRandomPointInsideRect(motionAsset, rect) {
+   static getRandomPointInsideRect(motionAsset, rect, uniqueQuad = true) {
       let randomXRange = {min:0, max:0};
       let randomYRange = {min:0, max:0};
       let point = {x: 0, y: 0};
 
-      if(motionAsset.x < (rect.x + rect.halfWidth)) {
-         randomXRange.min = rect.eighthWidth;
-         randomXRange.max = rect.halfWidth - randomXRange.min;
-      } else {
-         randomXRange.min = - rect.eighthWidth;
-         randomXRange.max = - rect.halfWidth - randomXRange.min;
-      }
+      if(uniqueQuad) {
+         if(motionAsset.x < (rect.x + rect.halfWidth)) {
+            randomXRange.min = rect.eighthWidth;
+            randomXRange.max = rect.halfWidth - randomXRange.min;
+         } else {
+            randomXRange.min = - rect.eighthWidth;
+            randomXRange.max = - rect.halfWidth - randomXRange.min;
+         }
 
-      if(motionAsset.y < (rect.y + rect.halfHeight)) {
-         randomYRange.min = rect.eighthHeight;
-         randomYRange.max = rect.halfHeight - randomYRange.min;
+         if(motionAsset.y < (rect.y + rect.halfHeight)) {
+            randomYRange.min = rect.eighthHeight;
+            randomYRange.max = rect.halfHeight - randomYRange.min;
+         } else {
+            randomYRange.min = - rect.eighthHeight;
+            randomYRange.max = - rect.halfHeight - randomYRange.min;
+         }
       } else {
-         randomYRange.min = - rect.eighthHeight;
-         randomYRange.max = - rect.halfHeight - randomYRange.min;
+         randomXRange.min = rect.x;
+         randomXRange.max = rect.width;
+         randomYRange.min = rect.y;
+         randomYRange.max = rect.height;
       }
 
       point.x = motionAsset.x + Math.round(randomXRange.min + Math.random() * randomXRange.max);
