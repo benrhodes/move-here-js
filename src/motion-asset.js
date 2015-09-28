@@ -5,7 +5,7 @@ import Status from './status-constants';
 const TARGET_FRAME_RATE = 60;
 
 export default class MotionAsset {
-   constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection) {
+   constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection, simulateDepth) {
       this._id = IdGenerator.getId();
       this._target = target;
       this._initTimeInMilliseconds = initTime;
@@ -16,6 +16,7 @@ export default class MotionAsset {
       this._motionDirection = motionDirection;
       this._rotateToDirection = rotateToDirection;
       this._unitsPerFrame = unitsPerSecond / TARGET_FRAME_RATE;
+      this._simulateDepth = simulateDepth;
       this._acquireRotationDirection = false;
       this._destinationX = 0;
       this._destinationY = 0;
@@ -23,6 +24,7 @@ export default class MotionAsset {
       this._rotationAmount = 0;
       this._rotationDirection = 1;
       this._rotationProxy = 0;
+
    }
    get id() {
       return this._id;
@@ -127,5 +129,11 @@ export default class MotionAsset {
    }
    get rotationDirection() {
       return this._rotationDirection;
+   }
+   set simulateDepth(simulateDepth) {
+      this._simulateDepth = simulateDepth;
+   }
+   get simulateDepth() {
+      return this._simulateDepth;
    }
 }

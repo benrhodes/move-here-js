@@ -1,5 +1,7 @@
 const OUTSIDE_TARGET_AREA = 'outside';
 const INSIDE_TARGET_AREA = 'inside';
+const MIN_SCALE = .5;
+const MAX_SCALE = 1.5;
 
 import Mathy from '../mathy';
 import Status from '../status-constants';
@@ -21,6 +23,10 @@ export default class RandomMotionAdapter {
       motionAsset.status = Status.ALIVE;
       motionAsset.acquireRotationDirection = true;
 
+      if(motionAsset.simulateDepth) {
+         motionAsset.scaleX = motionAsset.scaleY = (MIN_SCALE + ((motionAsset.y - this._boundingRectangle.y) / this._boundingRectangle.height));
+      }
+
       this._motionAssets[motionAsset.id] = motionAsset;
    }
    update(timeInMilliseconds) {
@@ -40,11 +46,24 @@ export default class RandomMotionAdapter {
       let motionAsset;
       let destinationPoint;
       let rotationAngle;
+      let newScale;
 
       Object.keys(this._motionAssets).forEach((key) => {
          motionAsset = this._motionAssets[key];
 
          isAssetOutOfTime = (timeInMilliseconds - motionAsset.initTime) >= motionAsset.duration;
+
+         if (motionAsset.simulateDepth) {
+            newScale = MIN_SCALE + (((motionAsset.y - this._boundingRectangle.y) / this._boundingRectangle.height) * (MAX_SCALE - MIN_SCALE));
+            if (newScale < MIN_SCALE) {
+               newScale = MIN_SCALE;
+            }
+            if(newScale > MAX_SCALE) {
+               newScale = MAX_SCALE;
+            }
+
+            motionAsset.scaleX = motionAsset.scaleY = newScale;
+         }
 
          if(isAssetOutOfTime && motionAsset.status === Status.ALIVE) {
             motionAsset.status = Status.DYING;
