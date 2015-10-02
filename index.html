@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Move Here - JavaScript to help move things.</title>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #fff;
+            background-color: #333;
+        }
+        h1 {
+            margin: 0;
+        }
+        a {
+            color: #5fa6ff;
+            text-decoration: none;
+        }
+        .controls-container {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            background-color: rgba(4, 15, 3, 0.65);
+            padding: 10px 20px;
+            border-radius: 0 10px 10px 0;
+        }
+        .canvas-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+        .fade-in {
+            opacity: 1.0;
+        }
+        .hide {
+            visibility: hidden;
+        }
+        .center-abs {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .glyph {
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        .play-glyph {
+            z-index: 1;
+        }
+        .pause-glyph {
+            z-index: 2;
+        }
+        .github-link {
+            display: inline-block;
+            width: 70px;
+            height: 20px;
+            margin-top: 10px;
+        }
+        .sub-text {
+            font-size: 12px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas class="canvas-display"></canvas>
+<div class="controls-container">
+    <h1>Move ➤ Here</h1>
+    <span class="sub-text">JavaScript that moves 'things'.</span>
+    <iframe class="github-link" src="https://ghbtns.com/github-btn.html?user=benrhodes&repo=move-here-js&type=watch&count=true&v=2" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+</div>
+<div class="center-abs glyph play-glyph"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-279 200 81 82" enable-background="new -279 200 81 82"><circle fill="#fff" stroke="#565656" stroke-width="3" stroke-miterlimit="10" cx="-239" cy="240" r="39"/><path fill="#4F4F4F" d="M-249.5 220.8v38.4l30.5-18.8z"/></svg></div>
+<div class="center-abs glyph pause-glyph hide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 81 82" enable-background="new 0 0 81 82"><circle fill="#fff" stroke="#565656" stroke-width="3" stroke-miterlimit="10" cx="40" cy="40" r="39"/><path fill="#4F4F4F" d="M29 24.7h6v30.7h-6zM45 24.7h6v30.7h-6z"/></svg></div>
+<script src="dist/move-here.min.js"></script>
+<script>
+    var numberAssetsToCreate = 1000;
+    var circleDiameter = 100;
+    var canvasWidth = window.innerWidth;
+    var canvasHeight = window.innerHeight;
+    var drawingOffset = 0;
+    var rect = new MoveHere.Rectangle({width: canvasWidth - drawingOffset, height: canvasHeight - drawingOffset});
+    var motionEngine = new MoveHere.MotionEngine(rect);
+    var actualXOffset = canvasWidth/2 - rect.width/2;
+    var actualYOffset = canvasHeight/2 - rect.height/2;
+
+    var drawCanvas = document.querySelector('.canvas-display');
+    drawCanvas.width = canvasWidth;
+    drawCanvas.height = canvasHeight;
+
+    var playButtonEl = document.querySelector('.play-glyph');
+    var pauseButtonEl = document.querySelector('.pause-glyph');
+
+    var ctx = drawCanvas.getContext('2d');
+
+    var assets = [];
+    var numberAssets = 0;
+    for(var i=0; i<numberAssetsToCreate; i++) {
+        var targetInst = {x: 0, y:0, width: circleDiameter, height: circleDiameter, rotation:0};
+        assets.push(motionEngine.addAsset({target:targetInst, duration: -1, unitsPerSecond: Math.floor(40 * Math.random()) + 40, rotationSpeedModifier: Math.floor(3 * Math.random()) + 1, simulateDepth: true, spawnLocation:'inside'}));
+    }
+
+    numberAssets = assets.length;
+
+    var renderToCanvas = function() {
+        var colorComponent;
+        var asset;
+        var twoTimesPi = 2 * Math.PI;
+
+        ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+        for(var i=0; i<numberAssets; i++) {
+            asset = assets[i];
+            if(asset.status !== 'dead') {
+                // gray scale color
+                colorComponent = (255 - (255 * (asset.scaleY - 0.5))).toString(16).split('.')[0];
+                if(colorComponent.length === 1) {
+                    colorComponent = '0' + colorComponent;
+                }
+
+                ctx.beginPath();
+                ctx.arc(asset.x + actualXOffset, asset.y + actualYOffset, circleDiameter * asset.scaleX, 0, twoTimesPi, false);
+                ctx.closePath();
+                ctx.fillStyle = '#' + colorComponent + colorComponent + colorComponent;
+                ctx.fill();
+            }
+        }
+
+        if(!motionEngine.paused) {
+            assets.sort(function (a, b) {
+                if (a.scaleY > b.scaleY) {
+                    return 1;
+                }
+                if (a.scaleY < b.scaleY) {
+                    return -1;
+                }
+                return 0;
+            });
+            requestAnimationFrame(renderToCanvas);
+        }
+    };
+
+    drawCanvas.addEventListener('click', function() {
+        if(!motionEngine.paused) {
+            motionEngine.stop();
+            pauseButtonEl.classList.add('hide');
+            playButtonEl.classList.remove('hide');
+            return;
+        }
+        drawCanvas.classList.add('fade-in');
+        motionEngine.start();
+        pauseButtonEl.classList.remove('hide');
+        playButtonEl.classList.add('hide');
+        requestAnimationFrame(renderToCanvas);
+    });
+
+    window.addEventListener('resize', function() {
+        canvasWidth = window.innerWidth;
+        canvasHeight = window.innerHeight;
+        actualXOffset = canvasWidth/2 - rect.width/2;
+        actualYOffset = canvasHeight/2 - rect.height/2;
+        drawCanvas.width = canvasWidth;
+        drawCanvas.height = canvasHeight;
+        if(motionEngine.paused) {
+            requestAnimationFrame(renderToCanvas);
+        }
+    });
+</script>
+</body>
+</html>
