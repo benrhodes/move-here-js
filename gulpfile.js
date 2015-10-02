@@ -3,9 +3,8 @@
 var gulp = require('./gulp')([
    'webserver',
    'jshint',
-   'jsdoc',
    'cleandocs',
-   'babel'
+   'build'
 ]);
 
 var Server = require('karma').Server;
@@ -17,6 +16,6 @@ var karma = function (done) {
 };
 
 gulp.task('karma', karma);
-gulp.task('build', ['karma', 'babel']);
-gulp.task('default', ['build']);
-gulp.task('docs', ['cleandocs', 'jsdoc']); // does not work with ES6 syntax
+gulp.task('debugBuild', ['karma', 'build']);
+gulp.task('distBuild', ['karma', 'dist']);
+gulp.task('default', ['debugBuild']);
