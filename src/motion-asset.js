@@ -3,6 +3,7 @@ import IdGenerator from './id-generator';
 import Status from './status-constants';
 
 const TARGET_FRAME_RATE = 60;
+const MIN_ROTATION_PER_FRAME = 1;
 
 export default class MotionAsset {
    constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection, simulateDepth, spawnLocation) {
@@ -26,6 +27,10 @@ export default class MotionAsset {
       this._rotationDirection = 1;
       this._rotationProxy = 0;
 
+      // check rotation per frame value to avoid pathing issues
+      if(this._rotationPerFrame < MIN_ROTATION_PER_FRAME) {
+         this._rotationPerFrame = MIN_ROTATION_PER_FRAME;
+      }
    }
    get id() {
       return this._id;
