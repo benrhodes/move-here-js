@@ -1,7 +1,7 @@
 {
   "name": "move-here-js",
-  "version": "0.0.0",
-  "description": "Little engine that moves",
+  "version": "0.1.0",
+  "description": "JavaScript to animate things from there to here or here to there.",
   "repository": {
     "type": "git",
     "url": "https://github.com/benrhodes/move-here-js.git"
