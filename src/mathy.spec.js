@@ -4,7 +4,7 @@
 import Mathy from './mathy';
 import Rectangle from './rectangle';
 
-describe('Mathy Spec', () => {
+describe('Mathy', () => {
    describe('getMinAngleDiff', () => {
       it('should return minimum angle difference for supplied angles', function() {
          expect(Mathy.getMinAngleDiff(-30, 90)).toBe(120);

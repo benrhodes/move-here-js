@@ -3,7 +3,7 @@
 
 import Rectangle from './rectangle';
 
-describe('Rectangle Spec', () => {
+describe('Rectangle', () => {
    let rectangle;
    let rectangle2;
 

@@ -3,7 +3,7 @@
 
 import Timer from './timer';
 
-describe('Timer Spec', () => {
+describe('Timer', () => {
    let timer = null;
    beforeEach(function() {
       window.performance = {
