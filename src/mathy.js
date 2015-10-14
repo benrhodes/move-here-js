@@ -8,6 +8,18 @@ export default class Mathy {
    static degrees(radians) {
       return DEGREES_CONVERSION * radians;
    }
+   static normalizeAngle(angleInDegrees) {
+      if(angleInDegrees > 360) {
+         while(angleInDegrees > 360) {
+            angleInDegrees -= 360;
+         }
+      } else if(angleInDegrees < -360) {
+         while(angleInDegrees < -360) {
+            angleInDegrees += 360;
+         }
+      }
+      return angleInDegrees;
+   }
    static getMinAngleDiff(angleInDegrees1, angleInDegrees2) {
       if((angleInDegrees1 <= 0 && angleInDegrees2 >= 0) || (angleInDegrees1 >= 0 && angleInDegrees2 <= 0)) {
          let angle1Abs = angleInDegrees1 > 0.0 ? angleInDegrees1 : -angleInDegrees1;
@@ -37,11 +49,7 @@ export default class Mathy {
          currentAngle = rotation + 90;
       }
 
-      if(currentAngle > 360) {
-         currentAngle = currentAngle - 360;
-      }
-
-      return currentAngle;
+      return Mathy.normalizeAngle(currentAngle);
    }
    static convertAngleToRotation(angle, xDiff, yDiff) {
       let rotation;

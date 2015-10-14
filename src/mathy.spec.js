@@ -16,6 +16,15 @@ describe('Mathy', () => {
       });
    });
 
+   describe('normalizeAngle', () => {
+      it('should normalize angel to be between -360 and 360', function() {
+         expect(Mathy.normalizeAngle(400)).toBe(40);
+         expect(Mathy.normalizeAngle(800)).toBe(80);
+         expect(Mathy.normalizeAngle(-400)).toBe(-40);
+         expect(Mathy.normalizeAngle(-800)).toBe(-80);
+      });
+   });
+
    describe('convertRotationToAngle', () => {
       it('should return correct angle when diff is in quad 1', function() {
          expect(Mathy.convertRotationToAngle(30, 0, -1)).toBe(120);
@@ -34,8 +43,12 @@ describe('Mathy', () => {
       it('should return correct angle when diff is in quad 4', function() {
          expect(Mathy.convertRotationToAngle(30, -1, -1)).toBe(120);
       });
-      it('should clamp angle to be less than or equal to 360 degrees', function() {
-         expect(Mathy.convertRotationToAngle(300, 0, -1)).toBe(30);
+      it('should call Mathy.normalizeAngle', function() {
+         spyOn(Mathy, 'normalizeAngle');
+
+         Mathy.convertRotationToAngle(300, 0, -1);
+
+         expect(Mathy.normalizeAngle).toHaveBeenCalledWith(390);
       });
    });
 
