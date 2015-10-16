@@ -3,7 +3,7 @@
 
 import IdGenerator from './id-generator';
 
-describe('Id Generator Spec', () => {
+describe('Id Generator', () => {
    it('getId returns a different id each time it is called.', function() {
       expect(IdGenerator.getId()).not.toEqual(IdGenerator.getId());
    });
