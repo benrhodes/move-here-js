@@ -86,6 +86,20 @@ var Mathy = (function () {
          return DEGREES_CONVERSION * radians;
       }
    }, {
+      key: "normalizeAngle",
+      value: function normalizeAngle(angleInDegrees) {
+         if (angleInDegrees > 360) {
+            while (angleInDegrees > 360) {
+               angleInDegrees -= 360;
+            }
+         } else if (angleInDegrees < -360) {
+            while (angleInDegrees < -360) {
+               angleInDegrees += 360;
+            }
+         }
+         return angleInDegrees;
+      }
+   }, {
       key: "getMinAngleDiff",
       value: function getMinAngleDiff(angleInDegrees1, angleInDegrees2) {
          if (angleInDegrees1 <= 0 && angleInDegrees2 >= 0 || angleInDegrees1 >= 0 && angleInDegrees2 <= 0) {
@@ -118,11 +132,7 @@ var Mathy = (function () {
                      currentAngle = rotation + 90;
                   }
 
-         if (currentAngle > 360) {
-            currentAngle = currentAngle - 360;
-         }
-
-         return currentAngle;
+         return Mathy.normalizeAngle(currentAngle);
       }
    }, {
       key: "convertAngleToRotation",
@@ -263,6 +273,110 @@ var INSIDE_TARGET_AREA = 'inside';
 var MIN_SCALE = .5;
 var MAX_SCALE = 1.5;
 
+var getPositionDelta = function getPositionDelta(motionAsset) {
+   var positionDelta = {};
+   positionDelta.x = motionAsset.destinationX - motionAsset.x;
+   positionDelta.y = motionAsset.destinationY - motionAsset.y;
+   return positionDelta;
+};
+
+var setNewDestinationPoint = function setNewDestinationPoint(motionAsset, boundingRectangle, location) {
+   var destinationPoint = undefined;
+   if (location === 'inside') {
+      destinationPoint = _mathy2['default'].getRandomPointInsideRect(motionAsset, boundingRectangle);
+   } else {
+      destinationPoint = _mathy2['default'].getRandomPointOutsideRect(motionAsset, boundingRectangle);
+   }
+
+   motionAsset.destinationX = destinationPoint.x;
+   motionAsset.destinationY = destinationPoint.y;
+};
+
+var resetRotationDirection = function resetRotationDirection(motionAsset) {
+   motionAsset.acquireRotationDirection = true;
+   motionAsset.rotationAmount = 0;
+};
+
+var setAssetStateBasedOnTime = function setAssetStateBasedOnTime(motionAsset, timeInMilliseconds, boundingRectangle) {
+   if (motionAsset.status === _statusConstants2['default'].ALIVE && motionAsset.duration !== -1 && timeInMilliseconds - motionAsset.initTime >= motionAsset.duration) {
+      setNewDestinationPoint(motionAsset, boundingRectangle, 'outside');
+      resetRotationDirection(motionAsset);
+      motionAsset.status = _statusConstants2['default'].DYING;
+   }
+};
+
+var setScale = function setScale(motionAsset, boundingRectangle) {
+   if (motionAsset.simulateDepth) {
+      var newScale = MIN_SCALE + (motionAsset.y - boundingRectangle.y) / boundingRectangle.height * (MAX_SCALE - MIN_SCALE);
+
+      if (newScale < MIN_SCALE) {
+         newScale = MIN_SCALE;
+      }
+      if (newScale > MAX_SCALE) {
+         newScale = MAX_SCALE;
+      }
+
+      motionAsset.scaleX = motionAsset.scaleY = newScale;
+   }
+};
+
+var setRotation = function setRotation(motionAsset, positionDelta) {
+   var distance = _mathy2['default'].distanceBetweenTwoPoints(motionAsset.x, motionAsset.y, motionAsset.destinationX, motionAsset.destinationY);
+   if (distance === 0) {
+      return;
+   }
+   var nextRotation = motionAsset.rotation;
+   var calculatedAngle = Math.round(_mathy2['default'].degrees(Math.acos(positionDelta.x / distance)));
+   var calculatedRotation = _mathy2['default'].convertAngleToRotation(calculatedAngle, positionDelta.x, positionDelta.y);
+   var rotationDiff = _mathy2['default'].getMinAngleDiff(calculatedRotation, nextRotation);
+
+   if (rotationDiff <= motionAsset.rotationPerFrame) {
+      nextRotation = calculatedRotation;
+   } else {
+      if (motionAsset.acquireRotationDirection) {
+         motionAsset.acquireRotationDirection = false;
+         if (calculatedAngle < nextRotation) {
+            motionAsset.rotationDirection = -1;
+         } else {
+            motionAsset.rotationDirection = 1;
+         }
+      }
+
+      // determine rotation modifier, this only comes into play when an object has rotated more than
+      // 360 degrees around the destination point.  We need to increase the speed of rotation to it
+      // so it can reach its destination eventually.
+      var rotationModifier = motionAsset.rotationAmount / 360 <= 1 ? 1 : motionAsset.rotationAmount / 360;
+
+      nextRotation += motionAsset.rotationDirection * motionAsset.rotationPerFrame * rotationModifier;
+      nextRotation = _mathy2['default'].normalizeAngle(nextRotation);
+   }
+   motionAsset.rotationAmount += _mathy2['default'].getMinAngleDiff(motionAsset.rotation, nextRotation);
+   motionAsset.rotation = nextRotation;
+};
+
+var setTranslation = function setTranslation(motionAsset, positionDelta) {
+   if (Math.abs(positionDelta.x) < motionAsset.unitsPerFrame && Math.abs(positionDelta.y) < motionAsset.unitsPerFrame) {
+      if (motionAsset.status === _statusConstants2['default'].DYING) {
+         motionAsset.status = _statusConstants2['default'].DEAD;
+      }
+      motionAsset.x = motionAsset.destinationX;
+      motionAsset.y = motionAsset.destinationY;
+   } else {
+      var currentAngleRadians = _mathy2['default'].radians(_mathy2['default'].convertRotationToAngle(motionAsset.rotation, positionDelta.x, positionDelta.y));
+      if (positionDelta.y < 0) {
+         motionAsset.x -= Math.cos(currentAngleRadians) * motionAsset.unitsPerFrame;
+         motionAsset.y -= Math.sin(currentAngleRadians) * motionAsset.unitsPerFrame;
+      } else {
+         motionAsset.x += Math.cos(currentAngleRadians) * motionAsset.unitsPerFrame;
+         motionAsset.y += Math.sin(currentAngleRadians) * motionAsset.unitsPerFrame;
+      }
+   }
+};
+
+var doesAssetNeedNewDestinationPoint = function doesAssetNeedNewDestinationPoint(motionAsset) {
+   return motionAsset.x === motionAsset.destinationX && motionAsset.y === motionAsset.destinationY;
+};
+
 var RandomMotionAdapter = (function () {
    function RandomMotionAdapter(boundingRectangle) {
       _classCallCheck(this, RandomMotionAdapter);
@@ -283,16 +397,11 @@ var RandomMotionAdapter = (function () {
          motionAsset.x = initPoint.x;
          motionAsset.y = initPoint.y;
 
-         var destinationPoint = _mathy2['default'].getRandomPointInsideRect(motionAsset, this._boundingRectangle);
-         motionAsset.destinationX = destinationPoint.x;
-         motionAsset.destinationY = destinationPoint.y;
+         setNewDestinationPoint(motionAsset, this._boundingRectangle, 'inside');
+         resetRotationDirection(motionAsset);
+         setScale(motionAsset, this._boundingRectangle);
 
          motionAsset.status = _statusConstants2['default'].ALIVE;
-         motionAsset.acquireRotationDirection = true;
-
-         if (motionAsset.simulateDepth) {
-            motionAsset.scaleX = motionAsset.scaleY = MIN_SCALE + (motionAsset.y - this._boundingRectangle.y) / this._boundingRectangle.height;
-         }
 
          this._motionAssets[motionAsset.id] = motionAsset;
       }
@@ -301,121 +410,26 @@ var RandomMotionAdapter = (function () {
       value: function update(timeInMilliseconds) {
          var _this = this;
 
-         var isAssetOutOfTime = undefined;
-         var currentAngle = undefined;
-         var currentRotation = undefined;
-         var distance = undefined;
-         var nextX = undefined;
-         var nextY = undefined;
-         var xDiff = undefined;
-         var yDiff = undefined;
-         var absXDiff = undefined;
-         var absYDiff = undefined;
-         var finalAngle = undefined;
-         var rotationDiff = undefined;
-         var rotationModifier = undefined;
          var motionAsset = undefined;
-         var destinationPoint = undefined;
-         var rotationAngle = undefined;
-         var newScale = undefined;
+         var positionDelta = undefined;
 
          Object.keys(this._motionAssets).forEach(function (key) {
             motionAsset = _this._motionAssets[key];
 
-            if (motionAsset.duration !== -1) {
-               isAssetOutOfTime = timeInMilliseconds - motionAsset.initTime >= motionAsset.duration;
-            } else {
-               isAssetOutOfTime = false;
+            setAssetStateBasedOnTime(motionAsset, timeInMilliseconds, _this._boundingRectangle);
+
+            positionDelta = getPositionDelta(motionAsset);
+            setScale(motionAsset, _this._boundingRectangle);
+            setRotation(motionAsset, positionDelta);
+            setTranslation(motionAsset, positionDelta);
+
+            if (doesAssetNeedNewDestinationPoint(motionAsset)) {
+               setNewDestinationPoint(motionAsset, _this._boundingRectangle, 'inside');
+               resetRotationDirection(motionAsset);
             }
 
-            if (motionAsset.simulateDepth) {
-               newScale = MIN_SCALE + (motionAsset.y - _this._boundingRectangle.y) / _this._boundingRectangle.height * (MAX_SCALE - MIN_SCALE);
-               if (newScale < MIN_SCALE) {
-                  newScale = MIN_SCALE;
-               }
-               if (newScale > MAX_SCALE) {
-                  newScale = MAX_SCALE;
-               }
-
-               motionAsset.scaleX = motionAsset.scaleY = newScale;
-            }
-
-            if (isAssetOutOfTime && motionAsset.status === _statusConstants2['default'].ALIVE) {
-               motionAsset.status = _statusConstants2['default'].DYING;
-
-               destinationPoint = _mathy2['default'].getRandomPointOutsideRect(motionAsset, _this._boundingRectangle);
-               motionAsset.destinationX = destinationPoint.x;
-               motionAsset.destinationY = destinationPoint.y;
-               motionAsset.acquireRotationDirection = true;
-               motionAsset.rotationAmount = 0;
-            }
-
-            currentRotation = motionAsset.rotation;
-
-            distance = _mathy2['default'].distanceBetweenTwoPoints(motionAsset.x, motionAsset.y, motionAsset.destinationX, motionAsset.destinationY);
-            xDiff = motionAsset.destinationX - motionAsset.x;
-            yDiff = motionAsset.destinationY - motionAsset.y;
-
-            finalAngle = Math.round(_mathy2['default'].degrees(Math.acos(xDiff / distance)));
-            rotationAngle = _mathy2['default'].convertAngleToRotation(finalAngle, xDiff, yDiff);
-            rotationDiff = _mathy2['default'].getMinAngleDiff(rotationAngle, currentRotation);
-
-            if (rotationDiff <= motionAsset.rotationPerFrame) {
-               currentRotation = rotationAngle;
-               currentAngle = _mathy2['default'].convertRotationToAngle(currentRotation, xDiff, yDiff);
-            } else {
-               currentAngle = _mathy2['default'].convertRotationToAngle(currentRotation, xDiff, yDiff);
-
-               if (motionAsset.acquireRotationDirection) {
-                  motionAsset.acquireRotationDirection = false;
-                  if (finalAngle < currentRotation) {
-                     motionAsset.rotationDirection = -1;
-                  } else {
-                     motionAsset.rotationDirection = 1;
-                  }
-               }
-
-               // determine rotation modifier, this only comes into play when an object has rotated more than
-               // 360 degrees around the destination point.  We need to increase the speed of rotation to it
-               // so it can reach its destination eventually.
-               rotationModifier = motionAsset.rotationAmount / 360 <= 1 ? 1 : motionAsset.rotationAmount / 360;
-
-               currentAngle += motionAsset.rotationDirection * motionAsset.rotationPerFrame * rotationModifier;
-               currentRotation += motionAsset.rotationDirection * motionAsset.rotationPerFrame * rotationModifier;
-            }
-
-            motionAsset.rotationAmount += _mathy2['default'].getMinAngleDiff(motionAsset.rotation, currentRotation);
-            motionAsset.rotation = currentRotation;
-
-            if (yDiff < 0) {
-               nextX = motionAsset.x - Math.cos(_mathy2['default'].radians(currentAngle)) * motionAsset.unitsPerFrame;
-               nextY = motionAsset.y - Math.sin(_mathy2['default'].radians(currentAngle)) * motionAsset.unitsPerFrame;
-            } else {
-               nextX = motionAsset.x + Math.cos(_mathy2['default'].radians(currentAngle)) * motionAsset.unitsPerFrame;
-               nextY = motionAsset.y + Math.sin(_mathy2['default'].radians(currentAngle)) * motionAsset.unitsPerFrame;
-            }
-
-            absXDiff = xDiff > 0.0 ? xDiff : -xDiff;
-            absYDiff = yDiff > 0.0 ? yDiff : -yDiff;
-
-            if (absXDiff < motionAsset.unitsPerFrame && absYDiff < motionAsset.unitsPerFrame) {
-               if (motionAsset.status === _statusConstants2['default'].ALIVE) {
-                  motionAsset.x = motionAsset.destinationX;
-                  motionAsset.y = motionAsset.destinationY;
-
-                  destinationPoint = _mathy2['default'].getRandomPointInsideRect(motionAsset, _this._boundingRectangle);
-                  motionAsset.destinationX = destinationPoint.x;
-                  motionAsset.destinationY = destinationPoint.y;
-                  motionAsset.acquireRotationDirection = true;
-                  motionAsset.rotationAmount = 0;
-               } else {
-                  // TODO: notify that asset is dead
-                  motionAsset.status = _statusConstants2['default'].DEAD;
-                  delete _this._motionAssets[key];
-               }
-            } else {
-               motionAsset.x = nextX;
-               motionAsset.y = nextY;
+            if (motionAsset.status === _statusConstants2['default'].DEAD) {
+               delete _this._motionAssets[key];
             }
          });
       }
