@@ -7,10 +7,10 @@ module.exports = function (config) {
       singleRun: true,
       frameworks: ['jasmine'],
       files: [
-         'src/**/*.spec.js'
+         'tests/**/*.spec.js'
       ],
       preprocessors: {
-         'src/**/*.spec.js': ['rollup']
+         'tests/**/*.spec.js': ['rollup']
       },
       rollupPreprocessor: {
          rollup: {
