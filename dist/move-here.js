@@ -823,8 +823,9 @@ var MotionEngine = function () {
    return MotionEngine;
 }();
 
-var MoveHere = global.MoveHere = global.MoveHere || {};
+var MoveHere = window.MoveHere = window.MoveHere || {};
 
 MoveHere.MotionDirection = MotionDirection;
 MoveHere.Rectangle = Rectangle;
 MoveHere.MotionEngine = MotionEngine;
+//# sourceMappingURL=move-here.js.map
