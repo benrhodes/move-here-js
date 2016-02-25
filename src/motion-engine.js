@@ -1,5 +1,5 @@
 import Rectangle from './rectangle';
-import MotionDirection from './motion-direction';
+import {MotionDirection} from './motion-direction';
 import RandomMotionAdapter from './motion-adapters/random-motion-adapter';
 import Timer from './timer';
 import MotionAsset from './motion-asset';
