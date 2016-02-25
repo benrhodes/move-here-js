@@ -1,4 +1,4 @@
-var MoveHere = global.MoveHere = global.MoveHere || {};
+var MoveHere = window.MoveHere = window.MoveHere || {};
 
 import Rectangle from './rectangle';
 import {MotionDirection} from './motion-direction';
