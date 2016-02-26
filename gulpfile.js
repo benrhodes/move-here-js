@@ -3,7 +3,8 @@
 var gulp = require('./gulp')([
    'webserver',
    'build',
-   'lint'
+   'lint',
+   'minify'
 ]);
 
 var Server = require('karma').Server;
@@ -15,4 +16,5 @@ var karma = function (done) {
 };
 
 gulp.task('karma', karma);
+gulp.task('release', ['lint', 'karma', 'build', 'minify']);
 gulp.task('default', ['build']);
