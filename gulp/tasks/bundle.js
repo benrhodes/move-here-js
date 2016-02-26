@@ -11,6 +11,7 @@ var bundleTask = function(){
       .pipe(sourcemaps.init())
       .pipe(rollup({
          sourceMap: true,
+         format: 'iife',
          plugins: [
             babel()
          ]
@@ -20,5 +21,5 @@ var bundleTask = function(){
       .pipe(gulp.dest('dist'));
 };
 
-gulp.task('bundle', bundleTask);
+gulp.task('bundle', ['lint', 'karma'], bundleTask);
 module.exports = bundleTask;
