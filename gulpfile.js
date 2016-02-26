@@ -2,7 +2,8 @@
 
 var gulp = require('./gulp')([
    'webserver',
-   'build'
+   'build',
+   'lint'
 ]);
 
 var Server = require('karma').Server;
