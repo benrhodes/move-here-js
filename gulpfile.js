@@ -5,8 +5,9 @@ var gulp = require('./gulp')([
    'lint',
    'karma',
    'bundle',
+   'bundle-es6',
    'minify'
 ]);
 
-gulp.task('release', ['bundle', 'minify']);
+gulp.task('release', ['bundle', 'bundleES6', 'minify']);
 gulp.task('default', ['release']);
