@@ -1,8 +1,8 @@
 /* global beforeEach, describe, expect, it */
 'use strict';
 
-import Mathy from './mathy';
-import Rectangle from './rectangle';
+import Mathy from '../src/mathy';
+import Rectangle from '../src/rectangle';
 
 describe('Mathy', () => {
    describe('getMinAngleDiff', () => {

@@ -1,7 +1,7 @@
 /* global beforeEach, describe, expect, it */
 'use strict';
 
-import Timer from './timer';
+import Timer from '../src/timer';
 
 describe('Timer', () => {
    let timer = null;

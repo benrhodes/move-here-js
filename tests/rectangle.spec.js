@@ -1,7 +1,7 @@
 /* global beforeEach, describe, expect, it */
 'use strict';
 
-import Rectangle from './rectangle';
+import Rectangle from '../src/rectangle';
 
 describe('Rectangle', () => {
    let rectangle;

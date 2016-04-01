@@ -2,29 +2,36 @@
 module.exports = function (config) {
    'use strict';
    config.set({
+      basePath: '',
       autoWatch: true,
       singleRun: true,
-
-      frameworks: ['jspm', 'jasmine'],
-
+      frameworks: ['jasmine'],
       files: [
-         'node_modules/babelify/node_modules/babel-core/browser-polyfill.js'
+         'tests/**/*.spec.js'
       ],
-
-      jspm: {
-         config: 'src/config.js',
-         loadFiles: [
-            'src/**/*.spec.js'
-         ],
-         serveFiles: [
-            'src/**/!(*spec).js'
-         ]
+      preprocessors: {
+         'tests/**/*.spec.js': ['rollup']
       },
-
-      proxies: {
-         '/base': '/base/src'
+      rollupPreprocessor: {
+         rollup: {
+            plugins: [
+               require('rollup-plugin-babel')({
+                  presets: [
+                     require('babel-preset-es2015-rollup')
+                  ]
+               })
+            ]
+         },
+         bundle: {
+            sourceMap: 'inline'
+         }
       },
-
+      plugins: [
+         'karma-jasmine',
+         'karma-phantomjs-launcher',
+         'karma-rollup-preprocessor'
+      ],
+      port: 9876,
       browsers: ['PhantomJS'],
       reporters: ['progress']
    });

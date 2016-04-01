@@ -1,10 +1,10 @@
 /* global beforeEach, describe, expect, it */
 'use strict';
 
-import RandomMotionAdapter from './random-motion-adapter';
-import Rectangle from '../rectangle';
-import Mathy from '../mathy';
-import Status from '../status-constants';
+import RandomMotionAdapter from '../../src/motion-adapters/random-motion-adapter';
+import Rectangle from '../../src/rectangle';
+import Mathy from '../../src/mathy';
+import Status from '../../src/status-constants';
 
 describe('Random Motion Adapter', () => {
    let randomMotionAdapter = null;
