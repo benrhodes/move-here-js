@@ -1,5 +1,5 @@
 export default class Rectangle {
-   constructor({x=0, y=-0, width=0, height=0} = {}) {
+   constructor({x = 0, y = -0, width = 0, height = 0} = {}) {
       this._x = x;
       this._y = y;
       this._width = width;
@@ -10,39 +10,39 @@ export default class Rectangle {
       this._eighthHeight = height / 8;
    }
 
-   set x(value){
+   set x(value) {
       this._x = value;
    }
 
-   get x(){
+   get x() {
       return this._x;
    }
 
-   set y(value){
+   set y(value) {
       this._y = value;
    }
 
-   get y(){
+   get y() {
       return this._y;
    }
 
-   set width(value){
+   set width(value) {
       this._width = value;
       this._halfWidth = value / 2;
       this._eighthWidth = value / 8;
    }
 
-   get width(){
+   get width() {
       return this._width;
    }
 
-   set height(value){
+   set height(value) {
       this._height = value;
       this._halfHeight = value / 2;
       this._eighthHeight = value / 8;
    }
 
-   get height(){
+   get height() {
       return this._height;
    }
 

@@ -1,4 +1,3 @@
-import MotionDirection from './motion-direction';
 import IdGenerator from './id-generator';
 import Status from './status-constants';
 
@@ -28,7 +27,7 @@ export default class MotionAsset {
       this._rotationProxy = 0;
 
       // check rotation per frame value to avoid pathing issues
-      if(this._rotationPerFrame < MIN_ROTATION_PER_FRAME) {
+      if (this._rotationPerFrame < MIN_ROTATION_PER_FRAME) {
          this._rotationPerFrame = MIN_ROTATION_PER_FRAME;
       }
    }
@@ -78,18 +77,17 @@ export default class MotionAsset {
       return this._target.height || 0;
    }
    set rotation(rotation) {
-      if(this._rotateToDirection) {
+      if (this._rotateToDirection) {
          this._target.rotation = rotation;
       } else {
          this._rotationProxy = rotation;
       }
    }
    get rotation() {
-      if(this._rotateToDirection) {
+      if (this._rotateToDirection) {
          return this._target.rotation;
-      } else {
-         return this._rotationProxy;
       }
+      return this._rotationProxy;
    }
    set destinationX(x) {
       this._destinationX = x;

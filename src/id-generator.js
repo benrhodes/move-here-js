@@ -4,4 +4,4 @@ export default class IdGenerator {
    static getId() {
       return id++;
    }
-};
+}
