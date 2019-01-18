@@ -6,7 +6,7 @@ JavaScript that moves 'things'.
 http://benrhodes.github.io/move-here-js/
 
 ## Installation
-`npm install move-here --save`
+`npm install move-here-js --save`
 
 ## Setup
 `<script src="dist/move-here.min.js"></script>`
