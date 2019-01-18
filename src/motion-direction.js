@@ -1,5 +1,5 @@
-export var MotionDirection = Object.defineProperties({}, {
-   'CURVE_RANDOM': {
+export const MotionDirection = Object.defineProperties({}, {
+   CURVE_RANDOM: {
       enumerable: true,
       value: 'curveRandom'
    }

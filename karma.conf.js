@@ -13,26 +13,22 @@ module.exports = function (config) {
          'tests/**/*.spec.js': ['rollup']
       },
       rollupPreprocessor: {
-         rollup: {
-            plugins: [
-               require('rollup-plugin-babel')({
-                  presets: [
-                     require('babel-preset-es2015-rollup')
-                  ]
-               })
-            ]
-         },
-         bundle: {
-            sourceMap: 'inline'
+         plugins: [
+            require('rollup-plugin-babel')()
+         ],
+         output: {
+            format: 'iife',
+            name: 'MoveHere',
+            sourcemap: 'inline'
          }
       },
       plugins: [
          'karma-jasmine',
-         'karma-phantomjs-launcher',
+         'karma-chrome-launcher',
          'karma-rollup-preprocessor'
       ],
       port: 9876,
-      browsers: ['PhantomJS'],
+      browsers: ['ChromeHeadless'],
       reporters: ['progress']
    });
 };

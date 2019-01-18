@@ -5,10 +5,8 @@ JavaScript that moves 'things'.
 ## Demo
 http://benrhodes.github.io/move-here-js/
 
-## Install
-### Bower
-`bower install move-here --save`
-
+## Installation
+`npm install move-here --save`
 
 ## Setup
 `<script src="dist/move-here.min.js"></script>`

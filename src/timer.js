@@ -10,12 +10,12 @@ export default class Timer {
    _tick() {
       this._requestAnimationId = null;
       this._currentTime = performance.now();
-      this._timeInMilliseconds += (this._currentTime - this._lastTime);
+      this._timeInMilliseconds += this._currentTime - this._lastTime;
       this._lastTime = this._currentTime;
       this._timeUpdateHandlers.every((timeUpdateHandler) => {
-         timeUpdateHandler(this._timeInMilliseconds);
+         return timeUpdateHandler(this._timeInMilliseconds);
       });
-      if(!this._paused) {
+      if (!this._paused) {
          this._requestAnimationId = requestAnimationFrame(() => this._tick());
       }
    }
@@ -34,7 +34,7 @@ export default class Timer {
       this._requestAnimationId = requestAnimationFrame(() => this._tick());
    }
    pause() {
-      if(this._requestAnimationId) {
+      if (this._requestAnimationId) {
          cancelAnimationFrame(this._requestAnimationId);
          this._requestAnimationId = null;
       }
