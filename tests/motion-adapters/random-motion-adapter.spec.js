@@ -16,7 +16,23 @@ describe('Random Motion Adapter', () => {
    beforeEach(function() {
       initPoint = {x:10, y:10};
       destinationPoint = {x:100, y:50};
-      motionAssetMock = {initTime: 0, x: 0, y:0, width: 10, height: 10, destinationX: 100, destinationY: 50, rotation: 0, rotationAmount: 0, rotationPerFrame: 1, status: 'born', acquireRotationDirection: true, unitsPerFrame: 5};
+      motionAssetMock = {
+         id: 'testId',
+         initTime: 0,
+         x: 0,
+         y:0,
+         width: 10,
+         height: 10,
+         destinationX: 100,
+         destinationY: 50,
+         rotation: 0,
+         rotationAmount: 0,
+         rotationPerFrame: 1,
+         status: 'born',
+         acquireRotationDirection: true,
+         unitsPerFrame: 5,
+         boundingRectangle: null
+      };
       spyOn(Mathy, 'getRandomPointInsideRect').and.returnValue(initPoint);
       spyOn(Mathy, 'getRandomPointOutsideRect').and.returnValue(initPoint);
       randomMotionAdapter = new RandomMotionAdapter(boundingRectangle);
@@ -32,12 +48,36 @@ describe('Random Motion Adapter', () => {
          expect(motionAssetMock.y).toBe(initPoint.y);
       });
 
+      it('should call getRandomPointInsideRect with Motion Asset bounding rectangle if supplied', function() {
+         const motionAssetBoundingRectangle = new Rectangle();
+         motionAssetMock.spawnLocation = 'inside';
+         motionAssetMock.boundingRectangle = motionAssetBoundingRectangle;
+
+         randomMotionAdapter.addAsset(motionAssetMock);
+
+         expect(Mathy.getRandomPointInsideRect).toHaveBeenCalledWith(motionAssetMock, motionAssetBoundingRectangle, false);
+         expect(motionAssetMock.x).toBe(initPoint.x);
+         expect(motionAssetMock.y).toBe(initPoint.y);
+      });
+
       it('should call getRandomPointOutsideRect when spawnLocation param is set to outside and set initial point.', function() {
          motionAssetMock.spawnLocation = 'outside';
 
          randomMotionAdapter.addAsset(motionAssetMock);
 
-         expect(Mathy.getRandomPointOutsideRect).toHaveBeenCalled();
+         expect(Mathy.getRandomPointOutsideRect).toHaveBeenCalledWith(motionAssetMock, boundingRectangle);
+         expect(motionAssetMock.x).toBe(initPoint.x);
+         expect(motionAssetMock.y).toBe(initPoint.y);
+      });
+
+      it('should call getRandomPointOutsideRect with motion asset bounding rectangle if supplied', function() {
+         const motionAssetBoundingRectangle = new Rectangle();
+         motionAssetMock.spawnLocation = 'outside';
+         motionAssetMock.boundingRectangle = motionAssetBoundingRectangle;
+
+         randomMotionAdapter.addAsset(motionAssetMock);
+
+         expect(Mathy.getRandomPointOutsideRect).toHaveBeenCalledWith(motionAssetMock, motionAssetBoundingRectangle);
          expect(motionAssetMock.x).toBe(initPoint.x);
          expect(motionAssetMock.y).toBe(initPoint.y);
       });
@@ -98,6 +138,20 @@ describe('Random Motion Adapter', () => {
             randomMotionAdapter.update(5001);
 
             expect(Mathy.getRandomPointOutsideRect).toHaveBeenCalledWith(motionAssetMock, boundingRectangle);
+            expect(motionAssetMock.destinationX).toBe(destinationPoint.x);
+            expect(motionAssetMock.destinationY).toBe(destinationPoint.y);
+         });
+
+         it('generates new point outside of motion asset rectangle', function() {
+            Mathy.getRandomPointOutsideRect.calls.reset();
+            Mathy.getRandomPointOutsideRect.and.returnValue(destinationPoint);
+
+            const motionAssetBoundingRectangle = new Rectangle();
+            motionAssetMock.boundingRectangle = motionAssetBoundingRectangle;
+
+            randomMotionAdapter.update(5001);
+
+            expect(Mathy.getRandomPointOutsideRect).toHaveBeenCalledWith(motionAssetMock, motionAssetBoundingRectangle);
             expect(motionAssetMock.destinationX).toBe(destinationPoint.x);
             expect(motionAssetMock.destinationY).toBe(destinationPoint.y);
          });

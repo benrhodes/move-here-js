@@ -119,14 +119,14 @@ export default class RandomMotionAdapter {
    addAsset(motionAsset) {
       let initPoint;
       if (motionAsset.spawnLocation === 'inside') {
-         initPoint = Mathy.getRandomPointInsideRect(motionAsset, this._boundingRectangle, false);
+         initPoint = Mathy.getRandomPointInsideRect(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle, false);
       } else {
-         initPoint = Mathy.getRandomPointOutsideRect(motionAsset, this._boundingRectangle);
+         initPoint = Mathy.getRandomPointOutsideRect(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle);
       }
       motionAsset.x = initPoint.x;
       motionAsset.y = initPoint.y;
 
-      setNewDestinationPoint(motionAsset, this._boundingRectangle, INSIDE_TARGET_AREA);
+      setNewDestinationPoint(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle, INSIDE_TARGET_AREA);
       resetRotationDirection(motionAsset);
       setScale(motionAsset, this._boundingRectangle);
 
@@ -141,7 +141,7 @@ export default class RandomMotionAdapter {
       Object.keys(this._motionAssets).forEach((key) => {
          motionAsset = this._motionAssets[key];
 
-         setAssetStateBasedOnTime(motionAsset, timeInMilliseconds, this._boundingRectangle);
+         setAssetStateBasedOnTime(motionAsset, timeInMilliseconds, motionAsset.boundingRectangle || this._boundingRectangle);
 
          positionDelta = getPositionDelta(motionAsset);
          setScale(motionAsset, this._boundingRectangle);
@@ -149,7 +149,7 @@ export default class RandomMotionAdapter {
          setTranslation(motionAsset, positionDelta);
 
          if (doesAssetNeedNewDestinationPoint(motionAsset)) {
-            setNewDestinationPoint(motionAsset, this._boundingRectangle, INSIDE_TARGET_AREA);
+            setNewDestinationPoint(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle, INSIDE_TARGET_AREA);
             resetRotationDirection(motionAsset);
          }
 

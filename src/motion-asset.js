@@ -5,7 +5,7 @@ const TARGET_FRAME_RATE = 60;
 const MIN_ROTATION_PER_FRAME = 1;
 
 export default class MotionAsset {
-   constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection, simulateDepth, spawnLocation) {
+   constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection, simulateDepth, spawnLocation, boundingRectangle = null) {
       this._id = IdGenerator.getId();
       this._target = target;
       this._initTimeInMilliseconds = initTime;
@@ -25,6 +25,7 @@ export default class MotionAsset {
       this._rotationAmount = 0;
       this._rotationDirection = 1;
       this._rotationProxy = 0;
+      this._boundingRectangle = boundingRectangle;
 
       // check rotation per frame value to avoid pathing issues
       if (this._rotationPerFrame < MIN_ROTATION_PER_FRAME) {
@@ -145,5 +146,8 @@ export default class MotionAsset {
    }
    get spawnLocation() {
       return this._spawnLocation;
+   }
+   get boundingRectangle() {
+      return this._boundingRectangle;
    }
 }
