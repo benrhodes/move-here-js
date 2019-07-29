@@ -613,7 +613,7 @@ var MoveHere = (function (exports) {
       stop() {
          this._timer.pause();
       }
-      addAsset({target = null, motionDirection = MotionDirection.CURVE_RANDOM, duration = MIN_DURATION, unitsPerSecond = MIN_UNITS_PER_SECOND, rotationSpeedModifier = MIN_ROTATION_SPEED_MODIFIER, rotateToDirection = true, simulateDepth = false, spawnLocation = 'outside'} = {}) {
+      addAsset({target = null, motionDirection = MotionDirection.CURVE_RANDOM, duration = MIN_DURATION, unitsPerSecond = MIN_UNITS_PER_SECOND, rotationSpeedModifier = MIN_ROTATION_SPEED_MODIFIER, rotateToDirection = true, simulateDepth = false, spawnLocation = 'outside', boundingRectangle = null} = {}) {
          // TODO: provide way to map transform (x, y, rotation, scale...) properties to target passed
          const motionAdapter = this._adaptersMap[motionDirection];
          if (!motionAdapter) {
@@ -621,7 +621,7 @@ var MoveHere = (function (exports) {
          }
 
          const rotationSpeed = Math.round(unitsPerSecond * rotationSpeedModifier);
-         const motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection, simulateDepth, spawnLocation);
+         const motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection, simulateDepth, spawnLocation, boundingRectangle);
 
          motionAdapter.addAsset(motionAsset);
 

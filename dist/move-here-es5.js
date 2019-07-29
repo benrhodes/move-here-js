@@ -807,7 +807,9 @@ var MoveHere = (function (exports) {
           _ref$simulateDepth = _ref.simulateDepth,
           simulateDepth = _ref$simulateDepth === void 0 ? false : _ref$simulateDepth,
           _ref$spawnLocation = _ref.spawnLocation,
-          spawnLocation = _ref$spawnLocation === void 0 ? 'outside' : _ref$spawnLocation;
+          spawnLocation = _ref$spawnLocation === void 0 ? 'outside' : _ref$spawnLocation,
+          _ref$boundingRectangl = _ref.boundingRectangle,
+          boundingRectangle = _ref$boundingRectangl === void 0 ? null : _ref$boundingRectangl;
 
       // TODO: provide way to map transform (x, y, rotation, scale...) properties to target passed
       var motionAdapter = this._adaptersMap[motionDirection];
@@ -817,7 +819,7 @@ var MoveHere = (function (exports) {
       }
 
       var rotationSpeed = Math.round(unitsPerSecond * rotationSpeedModifier);
-      var motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection, simulateDepth, spawnLocation);
+      var motionAsset = new MotionAsset(target, this._timer.time, duration, unitsPerSecond, rotationSpeed, motionDirection, rotateToDirection, simulateDepth, spawnLocation, boundingRectangle);
       motionAdapter.addAsset(motionAsset);
       return motionAsset;
     };
