@@ -345,14 +345,14 @@ var MoveHere = (function (exports) {
       addAsset(motionAsset) {
          let initPoint;
          if (motionAsset.spawnLocation === 'inside') {
-            initPoint = Mathy.getRandomPointInsideRect(motionAsset, this._boundingRectangle, false);
+            initPoint = Mathy.getRandomPointInsideRect(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle, false);
          } else {
-            initPoint = Mathy.getRandomPointOutsideRect(motionAsset, this._boundingRectangle);
+            initPoint = Mathy.getRandomPointOutsideRect(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle);
          }
          motionAsset.x = initPoint.x;
          motionAsset.y = initPoint.y;
 
-         setNewDestinationPoint(motionAsset, this._boundingRectangle, INSIDE_TARGET_AREA);
+         setNewDestinationPoint(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle, INSIDE_TARGET_AREA);
          resetRotationDirection(motionAsset);
          setScale(motionAsset, this._boundingRectangle);
 
@@ -367,7 +367,7 @@ var MoveHere = (function (exports) {
          Object.keys(this._motionAssets).forEach((key) => {
             motionAsset = this._motionAssets[key];
 
-            setAssetStateBasedOnTime(motionAsset, timeInMilliseconds, this._boundingRectangle);
+            setAssetStateBasedOnTime(motionAsset, timeInMilliseconds, motionAsset.boundingRectangle || this._boundingRectangle);
 
             positionDelta = getPositionDelta(motionAsset);
             setScale(motionAsset, this._boundingRectangle);
@@ -375,7 +375,7 @@ var MoveHere = (function (exports) {
             setTranslation(motionAsset, positionDelta);
 
             if (doesAssetNeedNewDestinationPoint(motionAsset)) {
-               setNewDestinationPoint(motionAsset, this._boundingRectangle, INSIDE_TARGET_AREA);
+               setNewDestinationPoint(motionAsset, motionAsset.boundingRectangle || this._boundingRectangle, INSIDE_TARGET_AREA);
                resetRotationDirection(motionAsset);
             }
 
@@ -442,7 +442,7 @@ var MoveHere = (function (exports) {
    const MIN_ROTATION_PER_FRAME = 1;
 
    class MotionAsset {
-      constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection, simulateDepth, spawnLocation) {
+      constructor(target, initTime, duration, unitsPerSecond, rotationPerSecond, motionDirection, rotateToDirection, simulateDepth, spawnLocation, boundingRectangle = null) {
          this._id = IdGenerator.getId();
          this._target = target;
          this._initTimeInMilliseconds = initTime;
@@ -462,6 +462,7 @@ var MoveHere = (function (exports) {
          this._rotationAmount = 0;
          this._rotationDirection = 1;
          this._rotationProxy = 0;
+         this._boundingRectangle = boundingRectangle;
 
          // check rotation per frame value to avoid pathing issues
          if (this._rotationPerFrame < MIN_ROTATION_PER_FRAME) {
@@ -582,6 +583,9 @@ var MoveHere = (function (exports) {
       }
       get spawnLocation() {
          return this._spawnLocation;
+      }
+      get boundingRectangle() {
+         return this._boundingRectangle;
       }
    }
 
