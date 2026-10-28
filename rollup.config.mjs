@@ -1,4 +1,4 @@
-// rollup.config.js
+// rollup.config.mjs
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import eslint from '@rollup/plugin-eslint';
 import terser from '@rollup/plugin-terser';

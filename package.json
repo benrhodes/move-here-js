@@ -36,10 +36,10 @@
     "rollup": "^4.66.0"
   },
   "scripts": {
-    "dev": "NODE_ENV=dev rollup --config ./rollup.config.js",
-    "build": "NODE_ENV=production rollup --config ./rollup.config.js",
-    "dev-es5": "NODE_ENV=dev-es5 rollup --config ./rollup.config.js",
-    "build-es5": "NODE_ENV=production-es5 rollup --config ./rollup.config.js",
+    "dev": "NODE_ENV=dev rollup --config ./rollup.config.mjs",
+    "build": "NODE_ENV=production rollup --config ./rollup.config.mjs",
+    "dev-es5": "NODE_ENV=dev-es5 rollup --config ./rollup.config.mjs",
+    "build-es5": "NODE_ENV=production-es5 rollup --config ./rollup.config.mjs",
     "build-all": "npm run dev & npm run build & npm run dev-es5 & npm run build-es5",
     "test": "node ./node_modules/karma/bin/karma start",
     "local": "node ./node_modules/http-server/bin/http-server -o --cors"
