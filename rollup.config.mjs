@@ -1,8 +1,8 @@
-// rollup.config.js
-import resolve from 'rollup-plugin-node-resolve';
-import {eslint} from 'rollup-plugin-eslint';
-import {terser} from "rollup-plugin-terser";
-import babel from 'rollup-plugin-babel';
+// rollup.config.mjs
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import eslint from '@rollup/plugin-eslint';
+import terser from '@rollup/plugin-terser';
+import {babel} from '@rollup/plugin-babel';
 
 let min = false;
 let useBabel = false;
@@ -34,9 +34,10 @@ export default {
       sourcemap: createSourceMap
    },
    plugins: [
-      resolve(),
+      nodeResolve(),
       eslint(),
       (useBabel && babel({
+         babelHelpers: 'bundled',
          exclude: 'node_modules/**'
       })),
       (min && terser())

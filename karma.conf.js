@@ -14,7 +14,9 @@ module.exports = function (config) {
       },
       rollupPreprocessor: {
          plugins: [
-            require('rollup-plugin-babel')()
+            require('@rollup/plugin-babel').babel({
+               babelHelpers: 'bundled'
+            })
          ],
          output: {
             format: 'iife',

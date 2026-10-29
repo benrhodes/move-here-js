@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/ruby:2.4-node-browsers
+      - image: cimg/node:22.13.0-browsers
     steps:
       - checkout
-      - run: npm install
-      - run: npm run test
+      - run: npm ci
+      - run: npm test

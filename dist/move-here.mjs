@@ -209,8 +209,6 @@ class Mathy {
             point.x = rect.x + Math.round(Math.random() * rect.width);
             point.y = rect.y + rect.height + motionAsset.height;
             break;
-         default:
-            break;
       }
 
       return point;
@@ -626,4 +624,4 @@ class MotionEngine {
    }
 }
 
-export { MotionDirection, Rectangle, MotionEngine };
+export { MotionDirection, MotionEngine, Rectangle };
